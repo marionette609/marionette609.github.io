@@ -1,4 +1,4 @@
-d3.json("https://raw.githubusercontent.com/marionette609/rew-scripts/refs/heads/main/sample-data/jot2-ess-dbu.json", function(data) {
+d3.json("https://raw.githubusercontent.com/marionette609/rew-scripts/refs/heads/main/sample-data/dsha-ygg-dBu.json", function(data) {
 
     var pfreq = [];
     var plevel = []
