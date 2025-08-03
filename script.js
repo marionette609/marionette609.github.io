@@ -10,6 +10,8 @@ let dataset = this_url.searchParams.get("dataset");
 let zmax = this_url.searchParams.get("zMax");
 let zmin = this_url.searchParams.get("zMin");
 
+let xlabel = this_url.searchParams.get("xLabel");
+
 if (dataset == null) {
     dataset = "DC07-balanced-300";
 }
@@ -20,6 +22,10 @@ if (zmax == null) {
 
 if (zmin == null) {
     zmin = -130;
+}
+
+if (xlabel == null) {
+    xlabel = "dBu";
 }
 
 d3.json(origin+"/data/"+dataset+".json", function(data) {
@@ -105,7 +111,7 @@ d3.json(origin+"/data/"+dataset+".json", function(data) {
                 },
                 xaxis: {
                     title: {
-                        text: "dBu (x)"
+                        text: xlabel + " (x)"
                     }
                 },
                 zaxis: {
