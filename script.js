@@ -12,6 +12,8 @@ let zmin = this_url.searchParams.get("zMin");
 
 let xlabel = this_url.searchParams.get("xLabel");
 
+let target_plot = this_url.searchParams.get('targetPlot');
+
 if (dataset == null) {
     dataset = "DC07-balanced-300";
 }
@@ -28,9 +30,13 @@ if (xlabel == null) {
     xlabel = "dBu";
 }
 
+if (target_plot == null) {
+    target_plot = "thdPlusN";
+}
+
 d3.json(origin+"/data/"+dataset+".json", function(data) {
 
-    function parse_json(distortion_to_plot = "thdPlusN") {
+    function parse_json(distortion_to_plot = "thdPlusN", offset = 0) {
         let pfreq = [];
         let plevel = []
         let pdist = [];
@@ -67,7 +73,7 @@ d3.json(origin+"/data/"+dataset+".json", function(data) {
                     plevel.sort((x,y) => x - y);
                 }
                 if(thd.hasOwnProperty(distortion_to_plot)){
-                    this_level.push(parseFloat(thd[distortion_to_plot]));
+                    this_level.push(parseFloat(thd[distortion_to_plot])+offset);
                 }else{
                     // this_level.push(-140.0);
                     this_level.push(null);
@@ -79,23 +85,8 @@ d3.json(origin+"/data/"+dataset+".json", function(data) {
         return [pfreq, plevel, pdist];
     }
 
-    function format_plot_data(frequency, level, distortion, title) {
-        let plotdata = [{
-            x: level,
-            y: frequency,
-            z: distortion,
-            type: 'surface',
-            colorscale: "Rainbow",
-            contours: {
-                z: {
-                    show:true,
-                    usecolormap: true,
-                    highlightcolor:"#42f462",
-                    project:{z: true}
-                }
-            }
-        }];
-    
+
+    function format_layout(title) {
         let layout = {
             title: {
                 text: "Distortion Surface " + title + " " + dataset
@@ -117,7 +108,7 @@ d3.json(origin+"/data/"+dataset+".json", function(data) {
                 zaxis: {
                     range: [zmin, zmax],
                     title: {
-                        text: "THD+N (z)"
+                        text: "Distortion (dB)"
                     }
                 },
                 aspectratio: {
@@ -132,24 +123,61 @@ d3.json(origin+"/data/"+dataset+".json", function(data) {
             height: 1000
     
         };
-        return [plotdata, layout];
+
+        return layout;
+    }
+
+    function format_plot_data(frequency, level, distortion, name="THD+n", color="Rainbow", show_scale=true) {
+        let plotdata = {
+            x: level,
+            y: frequency,
+            z: distortion,
+            name: name,
+            type: 'surface',
+            colorscale: color,
+            showscale: show_scale
+        };
+    
+
+        return plotdata;
     }
 
     let pfreq, plevel, pdist, dist_to_plot;
 
-    dist_to_plot = "thdPlusN";
-    [pfreq, plevel, pdist] = parse_json(dist_to_plot);
-    [plotdata, layout] = format_plot_data(pfreq, plevel, pdist, dist_to_plot);
-    Plotly.newPlot('thdplusn', plotdata, layout);
+    if (target_plot == "thdPlusN") {
+        [pfreq, plevel, pdist] = parse_json("thdPlusN");
+        plotdata = format_plot_data(pfreq, plevel, pdist);
+        layout = format_layout("THD+N");
+        Plotly.newPlot('thdplusn', [plotdata], layout);
+    }
+
+    if (target_plot == "thd") {
+        [pfreq, plevel, pdist] = parse_json("thd");
+        plotdata = format_plot_data(pfreq, plevel, pdist);
+        layout = format_layout("THD");
+        Plotly.newPlot('thdplusn', [plotdata], layout);
+    }
+
+    if (target_plot == "multi") {
+        [pfreq, plevel, pdist] = parse_json("thdPlusN");
+        plotdata = format_plot_data(pfreq, plevel, pdist);
+        [pfreq2, plevel2, pdist2] = parse_json("thd")
+        plotdata2 = format_plot_data(pfreq2, plevel2, pdist2, "THD", "Picnic", false);
+        
+        layout = format_layout("THD");
+        Plotly.newPlot('thdplusn', [plotdata, plotdata2], layout);
+    }
 
     dist_to_plot = "H2";
     [pfreq, plevel, pdist] = parse_json(dist_to_plot);
-    [plotdata, layout] = format_plot_data(pfreq, plevel, pdist, dist_to_plot);
-    Plotly.newPlot('H2', plotdata, layout);
+    plotdata = format_plot_data(pfreq, plevel, pdist);
+    layout = format_layout(dist_to_plot)
+    Plotly.newPlot('H2', [plotdata], layout);
 
     dist_to_plot = "H3";
     [pfreq, plevel, pdist] = parse_json(dist_to_plot);
-    [plotdata, layout] = format_plot_data(pfreq, plevel, pdist, dist_to_plot);
-    Plotly.newPlot('H3', plotdata, layout);
+    plotdata = format_plot_data(pfreq, plevel, pdist);
+    layout = format_layout(dist_to_plot)
+    Plotly.newPlot('H3', [plotdata], layout);
 
 });
