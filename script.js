@@ -2,36 +2,38 @@ let this_url = window.location.href;
 this_url = new URL(this_url);
 let origin = this_url.origin;
 
-if (origin == "null") {
+if (origin == "null" || origin.includes("file")) {
     origin = "https://marionette609.github.io"
 }
 
 let dataset = this_url.searchParams.get("dataset");
-let zmax = this_url.searchParams.get("zMax");
-let zmin = this_url.searchParams.get("zMin");
-
-let xlabel = this_url.searchParams.get("xLabel");
-
-let target_plot = this_url.searchParams.get('targetPlot');
-
 if (dataset == null) {
-    dataset = "DC07-balanced-300";
+    // dataset = "DC07-balanced-300";
+    dataset = "Yggdrasil-a2";
 }
 
+let zmax = this_url.searchParams.get("zMax");
 if (zmax == null) {
     zmax = -40;
 }
-
+let zmin = this_url.searchParams.get("zMin");
 if (zmin == null) {
     zmin = -130;
 }
 
-if (xlabel == null) {
-    xlabel = "dBu";
-}
-
+let target_plot = this_url.searchParams.get('targetPlot');
 if (target_plot == null) {
     target_plot = "thdPlusN";
+}
+
+let smooth_heat = this_url.searchParams.get('smoothHeat');
+if (smooth_heat == null) {
+    smooth_heat = false;
+}
+
+let xlabel = this_url.searchParams.get("xLabel");
+if (xlabel == null) {
+    xlabel = "dBu";
 }
 
 d3.json(origin+"/data/"+dataset+".json", function(data) {
@@ -117,11 +119,46 @@ d3.json(origin+"/data/"+dataset+".json", function(data) {
                     "z": 1
                 }
             },
-    
+            font: {
+                color: "#fff"
+            },
+            paper_bgcolor: "rgba(0,0,0,0)",
             autosize: false,
             width: 1000,
             height: 1000
     
+        };
+
+        return layout;
+    }
+
+    function format_layout_heatmap(title) {
+        let layout = {
+            title: {
+                    text: title
+            },
+            annotations: [],
+            xaxis: {
+                    title: {
+                        text: 'Level (dBu)'
+                    },
+                    ticks: '',
+                    side: 'bottom',
+            },
+            yaxis: {
+                    title: {
+                        text: 'Frequency (Hz)'
+                    },
+                    dtick: 1,
+                    type: "log",
+            },
+            font: {
+                color: "#fff"
+            },
+            paper_bgcolor: "rgba(0,0,0,0)",
+            autosize: false,
+            width: 600,
+            height: 600
         };
 
         return layout;
@@ -136,6 +173,27 @@ d3.json(origin+"/data/"+dataset+".json", function(data) {
             type: 'surface',
             colorscale: color,
             showscale: show_scale
+            
+        };
+    
+        return plotdata;
+    }
+
+    function format_plot_data_heatmap(frequency, level, distortion, name="THD+N", color="Rainbow", show_scale=true) {
+        if (smooth_heat) {
+            smooth = "best";
+        } else {
+            smooth = "false";
+        }
+        let plotdata = {
+            x: level,
+            y: frequency,
+            z: distortion,
+            name: name,
+            type: 'heatmap',
+            colorscale: color,
+            showscale: show_scale,
+            zsmooth: smooth,
         };
     
 
@@ -149,6 +207,12 @@ d3.json(origin+"/data/"+dataset+".json", function(data) {
         plotdata = format_plot_data(pfreq, plevel, pdist);
         layout = format_layout("THD+N");
         Plotly.newPlot('thdplusn', [plotdata], layout);
+
+
+        // [pfreq, plevel, pdist] = parse_json("thd");
+        plotdata_heatmap1 = format_plot_data_heatmap(pfreq, plevel, pdist);
+        layout_heatmap1 = format_layout_heatmap("THD+N");
+        Plotly.newPlot('heatmap1', [plotdata_heatmap1], layout_heatmap1);
     }
 
     if (target_plot == "thd") {
@@ -156,17 +220,38 @@ d3.json(origin+"/data/"+dataset+".json", function(data) {
         plotdata = format_plot_data(pfreq, plevel, pdist);
         layout = format_layout("THD");
         Plotly.newPlot('thdplusn', [plotdata], layout);
+        // [pfreq, plevel, pdist] = parse_json("thd");
+        
+        plotdata_heatmap1 = format_plot_data_heatmap(pfreq, plevel, pdist);
+        layout_heatmap1 = format_layout_heatmap("THD");
+        Plotly.newPlot('heatmap1', [plotdata_heatmap1], layout_heatmap1);
+
+
     }
 
     if (target_plot == "multi") {
         [pfreq, plevel, pdist] = parse_json("thdPlusN");
+        [pfreq2, plevel2, pdist2] = parse_json("thd");
+        [pfreq3, plevel3, pdist3] = parse_json("NandNHD");
+
         plotdata = format_plot_data(pfreq, plevel, pdist);
-        [pfreq2, plevel2, pdist2] = parse_json("thd")
         plotdata2 = format_plot_data(pfreq2, plevel2, pdist2, "THD", "Picnic", false);
         
-        layout = format_layout("THD");
+        layout = format_layout("THD+N & THD");
         Plotly.newPlot('thdplusn', [plotdata, plotdata2], layout);
+
+        plotdata_heatmap1 = format_plot_data_heatmap(pfreq2, plevel2, pdist2);
+        layout_heatmap1 = format_layout_heatmap("THD");
+        Plotly.newPlot('heatmap1', [plotdata_heatmap1], layout_heatmap1);
+        plotdata_heatmap2 = format_plot_data_heatmap(pfreq3, plevel3, pdist3);
+        layout_heatmap2 = format_layout_heatmap("N + NHD");
+        Plotly.newPlot('heatmap2', [plotdata_heatmap2], layout_heatmap2);
     }
+
+    // [pfreq, plevel, pdist] = parse_json("thd");
+    // plotdata_heatmap1 = format_plot_data_heatmap(pfreq, plevel, pdist);
+    // layout_heatmap1 = format_layout_heatmap("THD");
+    // Plotly.newPlot('heatmap1', [plotdata_heatmap1], layout_heatmap1);
 
     dist_to_plot = "H2";
     [pfreq, plevel, pdist] = parse_json(dist_to_plot);

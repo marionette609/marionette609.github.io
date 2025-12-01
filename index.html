@@ -1,12 +1,81 @@
-<head>
-	<!-- Load plotly.js into the DOM -->
-	<script src='https://cdn.plot.ly/plotly-3.3.0.min.js'></script>
-	<script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js'></script>
-    <script src="script.js"></script>
-</head>
-
-<body>
-	<div id='thdplusn'></div>
-	<div id='H2'></div>
-	<div id='H3'></div>
-</body>
+<html data-theme="dark">
+	<head>
+		<!-- plotly.js -->
+		<script src='https://cdn.plot.ly/plotly-3.3.0.min.js'></script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js'></script>
+		<!-- pico css -->
+		<link
+		rel="stylesheet"
+		href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+		>
+		<link
+		rel="stylesheet"
+		href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.colors.min.css"
+		>
+		<script src="script.js"></script>
+	</head>
+	
+	<body>
+		<main class="container">
+			<article class="pico-background-zinc-850">
+				<details name="measurement-info">
+					<summary>Measurement Info</summary>
+					<p>Software</p>
+					<ul>
+						<li>REW (Beta version)</li>
+						<li>48khz Sampling Rate for Input/Output</li>
+						<li><a href="https://github.com/marionette609/rew-scripts">Script used for REW API</a></li>
+					</ul>
+					<p>Equipment Used</p>
+					<ul>
+						<li>E1DA Cosmos ADCiso</li>
+						<li>E1DA Cosmos Scaler</li>
+						<li>If amplifier measurement, Schiit Modius E was used as signal generator</li>
+					</ul>
+					<p>FFT/Distortion Settings</p>
+					<ul>
+						<li>Blackman-Harris 7 Window</li>
+						<li>32k Length</li>
+						<li>4 Averages, No Smoothing</li>
+						<li>20hz LP, 21khz HP</li>
+						<li>Use AES17-2015 Standard Notch</li>
+					</ul>
+				</details>
+			</article>
+			<article class="pico-background-zinc-850">
+				<details name="measurement-info">
+					<summary>Viewer Options</summary>
+					<p>The following are available as url parameters</p>
+					<ul>
+						<li><b>zMin:</b> Set the minimum displayed range for Z axis in 3D viewers (<i>Default -130</i>)</li>
+						<li><b>zMax:</b> Set the maximum displayed range for Z axis in 3D viewers (<i>Default -40</i>)</li>
+						<li><b>targetPlot:</b> Changes data shown in surface viewer and heatmaps. Can be <kbd>thd</kbd>, <kbd>thdPlusN</kbd>, or <kbd>multi</kbd></li>
+						<li><b>smoothHeat:</b> Enable smoothing for heatmaps, can be <kbd>true</kbd> or <kbd>false</kbd></li>
+						<li><b>xLabel:</b> Changes unit label for X axis</li>
+					</ul>
+				</details>
+			</article>
+			<article class="pico-background-zinc-850">
+				<div class="grid">
+					<div id='thdplusn'></div>
+				</div>
+			</article>
+			<article class="pico-background-zinc-850">
+				<div class="grid">
+					<div id='heatmap1'></div>
+					<div id='heatmap2'></div>
+				</div>
+			</article>
+			<article class="pico-background-zinc-850">
+				<div class="grid">
+					<div id='H2'></div>
+				</div>
+			</article>
+			<article class="pico-background-zinc-850">			
+				<div class="grid">
+					<div id='H3'></div>
+				</div>
+			</article>
+		</main>
+	</body>
+</html>
