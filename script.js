@@ -124,8 +124,8 @@ d3.json(origin+"/data/"+dataset+".json", function(data) {
             },
             paper_bgcolor: "rgba(0,0,0,0)",
             autosize: false,
-            width: 1000,
-            height: 1000
+            width: 800,
+            height: 800
     
         };
 
