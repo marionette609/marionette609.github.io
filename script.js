@@ -179,7 +179,7 @@ d3.json(origin+"/data/"+dataset+".json", function(data) {
         return plotdata;
     }
 
-    function format_plot_data_heatmap(frequency, level, distortion, name="THD+N", color="Rainbow", show_scale=true) {
+    function format_plot_data_heatmap(frequency, level, distortion, color="Rainbow", show_scale=true) {
         if (smooth_heat) {
             smooth = "best";
         } else {
@@ -189,7 +189,6 @@ d3.json(origin+"/data/"+dataset+".json", function(data) {
             x: level,
             y: frequency,
             z: distortion,
-            name: name,
             type: 'heatmap',
             colorscale: color,
             showscale: show_scale,
@@ -208,8 +207,6 @@ d3.json(origin+"/data/"+dataset+".json", function(data) {
         layout = format_layout("THD+N");
         Plotly.newPlot('thdplusn', [plotdata], layout);
 
-
-        // [pfreq, plevel, pdist] = parse_json("thd");
         plotdata_heatmap1 = format_plot_data_heatmap(pfreq, plevel, pdist);
         layout_heatmap1 = format_layout_heatmap("THD+N");
         Plotly.newPlot('heatmap1', [plotdata_heatmap1], layout_heatmap1);
@@ -220,13 +217,10 @@ d3.json(origin+"/data/"+dataset+".json", function(data) {
         plotdata = format_plot_data(pfreq, plevel, pdist);
         layout = format_layout("THD");
         Plotly.newPlot('thdplusn', [plotdata], layout);
-        // [pfreq, plevel, pdist] = parse_json("thd");
         
         plotdata_heatmap1 = format_plot_data_heatmap(pfreq, plevel, pdist);
         layout_heatmap1 = format_layout_heatmap("THD");
         Plotly.newPlot('heatmap1', [plotdata_heatmap1], layout_heatmap1);
-
-
     }
 
     if (target_plot == "multi") {
@@ -235,7 +229,7 @@ d3.json(origin+"/data/"+dataset+".json", function(data) {
         [pfreq3, plevel3, pdist3] = parse_json("NandNHD");
 
         plotdata = format_plot_data(pfreq, plevel, pdist);
-        plotdata2 = format_plot_data(pfreq2, plevel2, pdist2, "THD", "Picnic", false);
+        plotdata2 = format_plot_data(pfreq2, plevel2, pdist2, "THD", "Viridis", false);
         
         layout = format_layout("THD+N & THD");
         Plotly.newPlot('thdplusn', [plotdata, plotdata2], layout);
@@ -243,15 +237,10 @@ d3.json(origin+"/data/"+dataset+".json", function(data) {
         plotdata_heatmap1 = format_plot_data_heatmap(pfreq2, plevel2, pdist2);
         layout_heatmap1 = format_layout_heatmap("THD");
         Plotly.newPlot('heatmap1', [plotdata_heatmap1], layout_heatmap1);
-        plotdata_heatmap2 = format_plot_data_heatmap(pfreq3, plevel3, pdist3);
+        plotdata_heatmap2 = format_plot_data_heatmap(pfreq3, plevel3, pdist3, "Picnic");
         layout_heatmap2 = format_layout_heatmap("N + NHD");
         Plotly.newPlot('heatmap2', [plotdata_heatmap2], layout_heatmap2);
     }
-
-    // [pfreq, plevel, pdist] = parse_json("thd");
-    // plotdata_heatmap1 = format_plot_data_heatmap(pfreq, plevel, pdist);
-    // layout_heatmap1 = format_layout_heatmap("THD");
-    // Plotly.newPlot('heatmap1', [plotdata_heatmap1], layout_heatmap1);
 
     dist_to_plot = "H2";
     [pfreq, plevel, pdist] = parse_json(dist_to_plot);
