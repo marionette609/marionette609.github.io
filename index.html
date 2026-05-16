@@ -12,27 +12,25 @@
 		rel="stylesheet"
 		href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.colors.min.css"
 		>
-		<script src="script.js"></script>
+		<script defer src="script.js"></script>
 	</head>
 	
 	<body>
 		<main class="container">
 			<article class="pico-background-zinc-850">
-				<details name="measurement-info">
+				<details id="measurement-info" name="measurement-info">
 					<summary>Measurement Info</summary>
-					<p>Software</p>
+					<h4>Software</h4>
 					<ul>
 						<li>REW (Beta version)</li>
 						<li>48khz Sampling Rate for Input/Output</li>
 						<li><a href="https://github.com/marionette609/rew-scripts">Script used for REW API</a></li>
 					</ul>
-					<p>Equipment Used</p>
-					<ul>
-						<li>E1DA Cosmos ADCiso</li>
-						<li>E1DA Cosmos Scaler</li>
-						<li>If amplifier measurement, Schiit Modius E was used as signal generator</li>
-					</ul>
-					<p>FFT/Distortion Settings</p>
+					<h4>Equipment</h4>
+					<div id="equipment-used">
+						<!-- populated by js -->
+					</div>
+					<h4>FFT/Distortion Settings</h4>
 					<ul>
 						<li>Blackman-Harris 7 Window</li>
 						<li>32k Length</li>

@@ -8,7 +8,6 @@ if (origin == "null" || origin.includes("file")) {
 
 let dataset = this_url.searchParams.get("dataset");
 if (dataset == null) {
-    // dataset = "DC07-balanced-300";
     dataset = "Yggdrasil-a2";
 }
 
@@ -35,8 +34,9 @@ let xlabel = this_url.searchParams.get("xLabel");
 if (xlabel == null) {
     xlabel = "dBu";
 }
-
-d3.json(origin+"/data/"+dataset+".json", function(data) {
+// override origin for local testing, leaving in because lazy
+// origin="C:/code/rew/marionette609.github.io";
+d3.json(`${origin}/data/${dataset}.json`, function(data) {
 
     function parse_json(distortion_to_plot = "thdPlusN", offset = 0) {
         let pfreq = [];
@@ -91,7 +91,7 @@ d3.json(origin+"/data/"+dataset+".json", function(data) {
     function format_layout(title) {
         let layout = {
             title: {
-                text: "Distortion Surface " + title + " " + dataset
+                text: `Distortion Surface ${title} ${dataset}`
             },
             scene: {
                 yaxis: {
@@ -254,4 +254,42 @@ d3.json(origin+"/data/"+dataset+".json", function(data) {
     layout = format_layout(dist_to_plot)
     Plotly.newPlot('H3', [plotdata], layout);
 
+});
+
+// populate measurement metadata info
+default_equipment = {
+    "ADC": "E1DA Cosmos ADCiso",
+    "Preamp": "E1DA Cosmos Scaler",
+};
+let equip_list = d3.select('#equipment-used').append('ul');
+
+function set_equipment(equipmentIn) {
+    for(let key in equipmentIn) {
+        equip_list.append('li').text(`${key}: ${equipmentIn[key]}`);
+    }
+}
+
+fetch(`${origin}/data/${dataset}-metadata.json`).then(response => {
+    if (!response.ok) {
+        // no specific metadata found, display default
+        set_equipment(default_equipment);
+        return;
+    }
+    response.json().then(respData => {
+        if("Equipment" in respData) {
+            equipment = respData["Equipment"]
+            set_equipment(equipment);
+        } else {
+            set_equipment(default_equipment);
+        }
+
+        if("Notes" in respData) {
+            d3.select('#measurement-info').append('h4').text("Notes");
+            d3.select('#measurement-info').append('p').text(respData["Notes"]);
+        }
+    });
+})
+.catch(error => {
+    // no specific metadata found, display default
+    set_equipment(default_equipment);
 });
